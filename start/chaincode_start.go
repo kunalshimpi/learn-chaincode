@@ -69,7 +69,7 @@ func (t *SimpleHealthChaincode) Init(stub shim.ChaincodeStubInterface, function 
 	fmt.Println("Assigning Amount for admin!")
 	_, err = stub.InsertRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
-			&shim.Column{Value: &shim.Column_String_{String_:"admin"}},
+			&shim.Column{Value: &shim.Column_Bytes{Bytes:[]byte("admin")}},
 			&shim.Column{Value: &shim.Column_Int32{Int32:1000}}},
 	})
 	if err != nil {
