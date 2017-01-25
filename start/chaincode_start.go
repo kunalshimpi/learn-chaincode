@@ -23,7 +23,10 @@ import (
 	"strconv"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/core/crypto/primitives"
+	"github.com/op/go-logging"
 )
+
+var myLogger = logging.MustGetLogger("asset_mgm")
 
 // SimpleHealthChaincode example simple Chaincode implementation
 type SimpleHealthChaincode struct {
@@ -209,7 +212,7 @@ func (t *SimpleHealthChaincode) read(stub shim.ChaincodeStubInterface, args []st
 	}
 	
 	fmt.Println("Finished Query function")
-	
+	myLogger.Debugf("Query done [% x]", row.Columns[1].GetInt64())
 	rowString := fmt.Sprintf("%s", row)
 	return []byte(rowString), nil
 	//return row.Columns[1].GetInt64(), nil
