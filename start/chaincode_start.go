@@ -96,8 +96,8 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 	}
 
 	//ReqAmount, _ := strconv.ParseInt(args[0], 10, 64)
-	ReqAmount, _ := args[1]
-	applicant, err := args[0]
+	ReqAmount := args[1]
+	applicant := args[0]
 	if err != nil{
 		return nil, errors.New("Decoding Failed!")
 	}
