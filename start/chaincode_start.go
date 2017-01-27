@@ -17,7 +17,7 @@ limitations under the License.
 package main
 
 import (
-	"encoding/base64"
+	//"encoding/base64"
 	"errors"
 	"fmt"
 	//"strconv"
