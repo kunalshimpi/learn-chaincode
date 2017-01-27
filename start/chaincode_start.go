@@ -208,11 +208,11 @@ func (t *SimpleHealthChaincode) read(stub shim.ChaincodeStubInterface, args []st
 	if len(args) != 1 {
 		return nil, errors.New("Expected 1 argument!")
 	}
-	applicant, err := base64.StdEncoding.DecodeString(args[0])
+	//applicant, err := base64.StdEncoding.DecodeString(args[0])
 	//fmt.Println("Finding [%x]",string(applicant))
-
+	applicant := args[0]
 	var columns []shim.Column
-	col := shim.Column{Value: &shim.Column_Bytes{Bytes: applicant}}
+	col := shim.Column{Value: &shim.Column_String_{String_: applicant}}
 	columns = append(columns,col)
 
 	row, err := stub.GetRow("InsuranceAmount",columns)
