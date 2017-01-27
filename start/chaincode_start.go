@@ -47,14 +47,14 @@ func (t *SimpleHealthChaincode) Init(stub shim.ChaincodeStubInterface, function 
 		return nil, errors.New("Incorrect number of arguments. Expecting 0")
 	}
 	err:=stub.CreateTable("InsuranceAmount", []*shim.ColumnDefinition{
-		&shim.ColumnDefinition{Name:"Owner",Type: shim.ColumnDefinition_BYTES, Key: true},
-		&shim.ColumnDefinition{Name:"Amount",Type:shim.ColumnDefinition_INT64, Key: false},
+		&shim.ColumnDefinition{Name:"Owner",Type: shim.ColumnDefinition_STRING, Key: true},
+		&shim.ColumnDefinition{Name:"Amount",Type:shim.ColumnDefinition_STRING, Key: false},
 	})
 	if err!= nil {
 		return nil, errors.New("Error in Creating InsuranceAmount Table!")
 	}
 
-	adminCert, err := stub.GetCallerMetadata()
+	/*adminCert, err := stub.GetCallerMetadata()
 
 	if err!= nil{
 		return nil, errors.New("Error Getting Metadata")
@@ -65,12 +65,14 @@ func (t *SimpleHealthChaincode) Init(stub shim.ChaincodeStubInterface, function 
 	stub.PutState("admin", adminCert)
 
 	fmt.Println("Admin is [%x] : ", adminCert)
-	
+	*/
+	owner := "admin"
+	asset := "assetA"
 	fmt.Println("Assigning Amount for admin!")
 	_, err = stub.InsertRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
-			&shim.Column{Value: &shim.Column_Bytes{Bytes:[]byte("admin")}},
-			&shim.Column{Value: &shim.Column_Int64{Int64:1000}}},
+			&shim.Column{Value: &shim.Column_String_{String:owner}},
+			&shim.Column{Value: &shim.Column_String_{String:asset}}},
 	})
 	if err != nil {
 		return nil, errors.New("Failed to Assign Amount!")
@@ -210,8 +212,8 @@ func (t *SimpleHealthChaincode) read(stub shim.ChaincodeStubInterface, args []st
 	
 	fmt.Println("Finished Query function")
 	
-	//rowString := fmt.Sprintf("%s", row)
-	//return []byte(rowString), nil
-	return row.Columns[0].GetBytes(), nil
+	rowString := fmt.Sprintf("%s", row)
+	return []byte(rowString), nil
+	//return row.Columns[1].GetBytes(), nil
 
 }
