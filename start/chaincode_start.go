@@ -74,6 +74,11 @@ func (t *SimpleHealthChaincode) Init(stub shim.ChaincodeStubInterface, function 
 			&shim.Column{Value: &shim.Column_String_{String_:owner}},
 			&shim.Column{Value: &shim.Column_String_{String_:asset}}},
 	})
+	_, err = stub.InsertRow("InsuranceAmount", shim.Row{
+		Columns: []*shim.Column {
+			&shim.Column{Value: &shim.Column_String_{String_:owner}},
+			&shim.Column{Value: &shim.Column_String_{String_:asset}}},
+	})
 	if err != nil {
 		return nil, errors.New("Failed to Assign Amount!")
 	}
@@ -90,14 +95,14 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 		return nil, errors.New("Expected 2 arguments!")
 	}
 
-	ReqAmount, _ := strconv.ParseInt(args[0], 10, 64)
-
-	applicant, err := base64.StdEncoding.DecodeString(args[1])
+	//ReqAmount, _ := strconv.ParseInt(args[0], 10, 64)
+	ReqAmount, _ := base64.StdEncoding.DecodeString(args[1])
+	applicant, err := base64.StdEncoding.DecodeString(args[0])
 	if err != nil{
 		return nil, errors.New("Decoding Failed!")
 	}
 
-	adminCert, err := stub.GetState("admin")
+	/*adminCert, err := stub.GetState("admin")
 	if err != nil{
 		return nil, errors.New("Failed to get admin Certificate!")
 	}
@@ -109,12 +114,17 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 	if !ok {
 		return nil, errors.New("Only Admin can call Approve function")
 	}
-
+*/
 	fmt.Println("Assigning Amount!")
-	ok, err = stub.InsertRow("InsuranceAmount", shim.Row{
+	/*ok, err = stub.InsertRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
 			&shim.Column{Value: &shim.Column_Bytes{Bytes:applicant}},
 			&shim.Column{Value: &shim.Column_Int64{Int64:ReqAmount}}},
+	})*/
+	ok, err = stub.InsertRow("InsuranceAmount", shim.Row{
+		Columns: []*shim.Column {
+			&shim.Column{Value: &shim.Column_String_{String_:owner}},
+			&shim.Column{Value: &shim.Column_String_{String_:asset}}},
 	})
 	if err != nil {
 		return nil, errors.New("Failed to Assign Amount!")
