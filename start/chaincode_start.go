@@ -123,8 +123,8 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 	})*/
 	ok, err1 := stub.InsertRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
-			&shim.Column{Value: &shim.Column_String_{String_:owner}},
-			&shim.Column{Value: &shim.Column_String_{String_:asset}}},
+			&shim.Column{Value: &shim.Column_String_{String_:applicant}},
+			&shim.Column{Value: &shim.Column_String_{String_:ReqAmount}}},
 	})
 	if err1 != nil {
 		return nil, errors.New("Failed to Assign Amount!")
