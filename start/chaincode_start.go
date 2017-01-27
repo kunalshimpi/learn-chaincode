@@ -48,7 +48,7 @@ func (t *SimpleHealthChaincode) Init(stub shim.ChaincodeStubInterface, function 
 	}
 	err:=stub.CreateTable("InsuranceAmount", []*shim.ColumnDefinition{
 		&shim.ColumnDefinition{Name:"Owner",Type: shim.ColumnDefinition_BYTES, Key: true},
-		&shim.ColumnDefinition{Name:"Amount",Type:shim.ColumnDefinition_INT32, Key: false},
+		&shim.ColumnDefinition{Name:"Amount",Type:shim.ColumnDefinition_INT64, Key: false},
 	})
 	if err!= nil {
 		return nil, errors.New("Error in Creating InsuranceAmount Table!")
@@ -70,7 +70,7 @@ func (t *SimpleHealthChaincode) Init(stub shim.ChaincodeStubInterface, function 
 	_, err = stub.InsertRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
 			&shim.Column{Value: &shim.Column_Bytes{Bytes:[]byte("admin")}},
-			&shim.Column{Value: &shim.Column_Int32{Int32:1000}}},
+			&shim.Column{Value: &shim.Column_Int64{Int64:1000}}},
 	})
 	if err != nil {
 		return nil, errors.New("Failed to Assign Amount!")
