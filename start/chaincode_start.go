@@ -20,9 +20,9 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"strconv"
+	//"strconv"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/core/crypto/primitives"
+	//"github.com/hyperledger/fabric/core/crypto/primitives"
 )
 
 // SimpleHealthChaincode example simple Chaincode implementation
@@ -33,7 +33,7 @@ type SimpleHealthChaincode struct {
 // Main
 // ============================================================================================================================
 func main() {
-	primitives.SetSecurityLevel("SHA", 256)	
+	//primitives.SetSecurityLevel("SHA", 256)	
 	err := shim.Start(new(SimpleHealthChaincode))
 	if err != nil {
 		fmt.Printf("Error starting Simple chaincode: %s", err)
@@ -121,21 +121,21 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 			&shim.Column{Value: &shim.Column_Bytes{Bytes:applicant}},
 			&shim.Column{Value: &shim.Column_Int64{Int64:ReqAmount}}},
 	})*/
-	ok, err = stub.InsertRow("InsuranceAmount", shim.Row{
+	ok, err1 := stub.InsertRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
 			&shim.Column{Value: &shim.Column_String_{String_:owner}},
 			&shim.Column{Value: &shim.Column_String_{String_:asset}}},
 	})
-	if err != nil {
+	if err1 != nil {
 		return nil, errors.New("Failed to Assign Amount!")
 	}
 	//???
-	if !ok && err == nil {
+	if !ok && err1 == nil {
 		return nil, errors.New("Amount already Assigned")
 	}
 
 	fmt.Println("Approve Finished")
-	return nil, err
+	return nil, err1
 }
 
 func (t *SimpleHealthChaincode) isCaller(stub shim.ChaincodeStubInterface, certificate []byte) (bool, error) {
