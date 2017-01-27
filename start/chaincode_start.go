@@ -14,7 +14,7 @@ limitations under the License.
 package main
 
 import (
-	"encoding/base64"
+	//"encoding/base64"
 	"errors"
 	"fmt"
 	"strconv"
@@ -87,10 +87,10 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 
 	ReqAmount, _ := strconv.ParseInt(args[1], 10, 64)
 
-	applicant, err := []byte(args[0])
-	if err != nil{
+	applicant := []byte(args[0])
+	/*if err != nil{
 		return nil, errors.New("Decoding Failed!")
-	}
+	}*/
 
 	adminCert, err := stub.GetState("admin")
 	if err != nil{
