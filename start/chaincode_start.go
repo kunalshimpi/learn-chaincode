@@ -92,19 +92,19 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 		return nil, errors.New("Decoding Failed!")
 	}*/
 
-	adminCert, err := stub.GetState("admin")
+	//adminCert, err := stub.GetState("admin")
 	if err != nil{
 		return nil, errors.New("Failed to get admin Certificate!")
 	}
 
-	ok, err := t.isCaller(stub, adminCert)
+	/*ok, err := t.isCaller(stub, adminCert)
 	if err != nil {
 		return nil, errors.New("Failed to Check Certificates!")
 	}
 	if !ok {
 		return nil, errors.New("Only Admin can call Approve function")
 	}
-
+*/
 	fmt.Println("Assigning Amount!")
 	
 	var columns []shim.Column
@@ -164,13 +164,13 @@ func (t *SimpleHealthChaincode) transfer(stub shim.ChaincodeStubInterface, args 
 		return nil, errors.New("Failed to Get sender's Balance amount")
 	}
 //chwck caller and Owner
-	ok, err := t.isCaller(stub, sender)
+	/*ok, err := t.isCaller(stub, sender)
 	if err != nil {
 		return nil, errors.New("Failed checking sender & caller identity")
 	}
 	if !ok {
 		return nil, errors.New("The caller is not the owner of the amount")
-	}
+	}*/
 //change assets  of sender
 	BalanceAmount := row.Columns[1].GetInt64()
 	BalanceAmount = BalanceAmount - transferAmount
