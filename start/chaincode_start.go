@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"strconv"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/hyperledger/fabric/core/crypto/primitives"
+	//"github.com/hyperledger/fabric/core/crypto/primitives"
 )
 
 // SimpleHealthChaincode example simple Chaincode implementation
@@ -30,7 +30,7 @@ type SimpleHealthChaincode struct {
 // Main
 // ============================================================================================================================
 func main() {
-	primitives.SetSecurityLevel("SHA", 256)	
+	//primitives.SetSecurityLevel("SHA", 256)	
 	err := shim.Start(new(SimpleHealthChaincode))
 	if err != nil {
 		fmt.Printf("Error starting Simple chaincode: %s", err)
@@ -51,7 +51,7 @@ func (t *SimpleHealthChaincode) Init(stub shim.ChaincodeStubInterface, function 
 		return nil, errors.New("Error in Creating InsuranceAmount Table!")
 	}
 
-	adminCert, err := stub.GetCallerMetadata()
+	/*adminCert, err := stub.GetCallerMetadata()
 
 	if err!= nil{
 		return nil, errors.New("Error Getting Metadata")
@@ -62,7 +62,7 @@ func (t *SimpleHealthChaincode) Init(stub shim.ChaincodeStubInterface, function 
 	stub.PutState("admin", adminCert)
 
 	fmt.Println("Admin is [%x] : ", adminCert)
-	
+	*/
 	fmt.Println("Assigning Amount for admin!")
 	_, err = stub.InsertRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
@@ -92,7 +92,7 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 		return nil, errors.New("Decoding Failed!")
 	}*/
 
-	adminCert, err := stub.GetState("admin")
+	/*adminCert, err := stub.GetState("admin")
 	if err != nil{
 		return nil, errors.New("Failed to get admin Certificate!")
 	}
@@ -104,7 +104,7 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 	if !ok {
 		return nil, errors.New("Only Admin can call Approve function")
 	}
-
+*/
 	fmt.Println("Assigning Amount!")
 	
 	var columns []shim.Column
@@ -118,7 +118,7 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 	BalAmount := row.Columns[1].GetInt64()
 	BalAmount = BalAmount - ReqAmount
 	
-	ok, err = stub.ReplaceRow("InsuranceAmount", shim.Row{
+	ok, err := stub.ReplaceRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
 			&shim.Column{Value: &shim.Column_Bytes{Bytes:[]byte("admin")}},
 			&shim.Column{Value: &shim.Column_Int64{Int64:BalAmount}},
@@ -137,7 +137,6 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 	if err != nil {
 		return nil, errors.New("Failed to Assign Amount!")
 	}
-	//???
 	if !ok && err == nil {
 		return nil, errors.New("Amount already Assigned")
 	}
@@ -162,7 +161,7 @@ func (t *SimpleHealthChaincode) transfer(stub shim.ChaincodeStubInterface, args 
 	row, err := stub.GetRow("InsuranceAmount", columns)
 	if err != nil {
 		return nil, errors.New("Failed to Get sender's Balance amount")
-	}
+	}/*
 //chwck caller and Owner
 	ok, err := t.isCaller(stub, sender)
 	if err != nil {
@@ -170,7 +169,7 @@ func (t *SimpleHealthChaincode) transfer(stub shim.ChaincodeStubInterface, args 
 	}
 	if !ok {
 		return nil, errors.New("The caller is not the owner of the amount")
-	}
+	}*/
 //change assets  of sender
 	BalanceAmount := row.Columns[1].GetInt64()
 	BalanceAmount = BalanceAmount - transferAmount
