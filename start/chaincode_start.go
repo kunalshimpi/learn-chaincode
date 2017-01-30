@@ -106,10 +106,33 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 	}
 
 	fmt.Println("Assigning Amount!")
+	
+	var columns []shim.Column
+	col1 := shim.Column{Value: &shim.Column_Bytes{Bytes:[]byte("admin")}}
+	columns = append(columns, col1)
+
+	row, err1 := stub.GetRow("InsuranceAmount", columns)
+	if err1 != nil {
+		return nil, errors.New("Cannot retrieve admin Row!")
+	}
+	BalAmount := row.Columns[1].GetInt64()
+	BalAmount = BalAmount - ReqAmount
+	
+	_, err = stub.ReplaceRow("InsuranceAmount", shim.Row{
+		Columns: []*shim.Column {
+			&shim.Column{Value: &shim.Column_Bytes{Bytes:[]byte("admin")}},
+			&shim.Column{Value: &shim.Column_Int64{Int64:BalAmount}},
+		},
+	})
+	if err != nil {
+		return nil, errors.New("Failed to Replace Admin Row!")
+	}
+
 	ok, err = stub.InsertRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
 			&shim.Column{Value: &shim.Column_Bytes{Bytes:applicant}},
-			&shim.Column{Value: &shim.Column_Int64{Int64:ReqAmount}}},
+			&shim.Column{Value: &shim.Column_Int64{Int64:ReqAmount}},
+			},
 	})
 	if err != nil {
 		return nil, errors.New("Failed to Assign Amount!")
@@ -121,6 +144,70 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 
 	fmt.Println("Approve Finished")
 	return nil, err
+}
+
+func (t *SimpleHealthChaincode) transfer(stub shim.ChaincodeStubInterface, args []string)([]byte, error){
+	if len(args) != 3{
+		return nil, errors.New("Expected 3 arguments!")
+	}	
+	sender := []byte(args[0])
+	receiver := []byte(args[1])
+	transferAmount,_ := strconv.ParseInt(args[2], 10, 64)
+
+//getowner asst from bc
+	var columns []shim.Column
+	col1 := shim.Column{Value: &shim.Column_Bytes{Bytes:sender}}
+	columns = append(columns, col1)
+
+	row, err := stub.GetRow("InsuranceAmount", columns)
+	if err != nil {
+		return nil, errors.New("Failed to Get sender's Balance amount")
+	}
+//chwck caller and Owner
+	ok, err := t.isCaller(stub, sender)
+	if err != nil {
+		return nil, errors.New("Failed checking sender & caller identity")
+	}
+	if !ok {
+		return nil, errors.New("The caller is not the owner of the amount")
+	}
+//change assets  of sender
+	BalanceAmount := row.Columns[1].GetInt64()
+	BalanceAmount = BalanceAmount - transferAmount
+//replace sender row
+	_, err = stub.ReplaceRow("InsuranceAmount", shim.Row{
+		Columns : []*shim.Column {
+			&shim.Column{Value: &shim.Column_Bytes{Bytes:sender}},
+			&shim.Column{Value: &shim.Column_Int64{Int64:BalanceAmount}},
+		},
+		})
+	if err != nil {
+		return nil, errors.New("Failed to replace sender row!")
+	}
+//change assets of receiver
+	var columns1 []shim.Column
+	col2 := shim.Column{Value: &shim.Column_Bytes{Bytes:receiver}}
+	columns1 = append(columns1, col2)
+
+	row2, err := stub.GetRow("InsuranceAmount", columns1)
+	if err != nil {
+		return nil, errors.New("Failed to Get sender's Balance amount")
+	}
+
+	BalAmt := row2.Columns[1].GetInt64()
+	BalAmt = BalAmt + transferAmount
+//replace recv row
+	_, err = stub.ReplaceRow("InsuranceAmount", shim.Row{
+		Columns: []*shim.Column {
+			&shim.Column{Value: &shim.Column_Bytes{Bytes:receiver}},
+			&shim.Column{Value: &shim.Column_Int64{Int64:BalAmt}},
+		},
+	})
+	if err != nil {
+		return nil, errors.New("Failed to replace receiver's row!")
+	}
+
+	return nil, nil
 }
 
 func (t *SimpleHealthChaincode) isCaller(stub shim.ChaincodeStubInterface, certificate []byte) (bool, error) {
@@ -169,7 +256,9 @@ func (t *SimpleHealthChaincode) Invoke(stub shim.ChaincodeStubInterface, functio
 	// Handle different functions
 	if function == "approve" {													//initialize the chaincode state, used as reset
 		return t.approve(stub, args)
-	} 
+	} else if function == "transfer"{
+		return t.transfer(stub, args)
+	}
 	fmt.Println("invoke did not find func: " + function)					//error
 
 	return nil, errors.New("Received unknown function invocation: " + function)
