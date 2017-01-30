@@ -97,7 +97,7 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 		return nil, errors.New("Failed to get admin Certificate!")
 	}
 
-	//ok, err := t.isCaller(stub, adminCert)
+	ok, err := t.isCaller(stub, adminCert)
 	if err != nil {
 		return nil, errors.New("Failed to Check Certificates!")
 	}
@@ -118,7 +118,7 @@ func (t *SimpleHealthChaincode) approve(stub shim.ChaincodeStubInterface, args [
 	BalAmount := row.Columns[1].GetInt64()
 	BalAmount = BalAmount - ReqAmount
 	
-	_, err = stub.ReplaceRow("InsuranceAmount", shim.Row{
+	ok, err = stub.ReplaceRow("InsuranceAmount", shim.Row{
 		Columns: []*shim.Column {
 			&shim.Column{Value: &shim.Column_Bytes{Bytes:[]byte("admin")}},
 			&shim.Column{Value: &shim.Column_Int64{Int64:BalAmount}},
